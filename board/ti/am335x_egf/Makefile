@@ -14,7 +14,7 @@ ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_NOR_BOOT),y)
 COBJS	:= mux.o
 endif
 
-COBJS	+= board.o
+COBJS	+= board.o gf_eeprom.o gf_eeprom_port.o
 SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS))
 SOBJS	:= $(addprefix $(obj),$(SOBJS))

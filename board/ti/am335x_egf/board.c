@@ -30,13 +30,70 @@
 #include <power/tps65217.h>
 #include <power/tps65910.h>
 #include "board.h"
+#include "gf_eeprom.h" 
 
 DECLARE_GLOBAL_DATA_PTR;
 
 /* GPIO that controls power to DDR on EVM-SK */
 #define GPIO_DDR_VTT_EN		7
 
+/* Supported DDR3 RAM Models */
+#define MICRON_MT41K128M16JT	1	// 256MB
+#define MICRON_MT41K256M16HA	2	// 512MB
+
+/* SW REVISIONS*/
+#define REV_WID0400_AA0101 "WID0400_AA01.01"
+#define REV_WID0400_AB0101 "WID0400_AB01.01"
+
+struct egf_som {
+	int ram_model;
+};
+
+static struct egf_som __attribute__((section (".data"))) the_som;
 static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+
+int gf_strcmp(const char * cs, const char * ct) {
+	register signed char __res;
+
+	while (1) {
+		if ((__res = *cs - *ct++) != 0 || !*cs++)
+			break;
+	}
+
+	return __res;
+}
+
+int load_revision(void)
+{
+	char * egf_sw_id_code;
+	int ret;
+	
+	ret = gf_load_som_revision(&egf_sw_id_code,0);
+	if (ret)
+	{
+		printf("System Hang.\n");
+		while(1);
+ 	}
+
+	if(!gf_strcmp(egf_sw_id_code,REV_WID0400_AA0101))
+	{
+		/* SW Revision is WID0400_AA01.00 */
+		printf("GF Software ID Code: WID0400_AA01.01\n");
+		the_som.ram_model = MICRON_MT41K128M16JT;
+	}
+	else if(!gf_strcmp(egf_sw_id_code,REV_WID0400_AB0101))
+	{
+		/* SW Revision is WID0400_AB01.00 */
+		printf("GF Software ID Code: WID0400_AB01.01\n");
+		the_som.ram_model = MICRON_MT41K256M16HA;
+	}
+	else {
+		printf("Unrecognized EGF SW ID Code: %s\n",egf_sw_id_code);
+		printf("System Hang.\n");
+		while(1);
+	}
+	return 0;
+}
 
 #if defined(CONFIG_SPL_BUILD) || defined(CONFIG_NOR_BOOT)
 static const struct ddr_data ddr2_data = {
@@ -188,6 +245,7 @@ const struct dpll_params dpll_ddr_evm_sk = {
 const struct dpll_params dpll_ddr_bone_black = {
 		400, OSC-1, 1, -1, -1, -1, -1};
 
+
 void am33xx_spl_board_init(void)
 {
 	struct am335x_baseboard_id header;
@@ -231,6 +289,10 @@ void am33xx_spl_board_init(void)
 
 	/* Set MPU Frequency to what we detected now that voltages are set */
 	do_setup_dpll(&dpll_mpu_regs, &dpll_mpu_opp100);
+
+
+
+
 }
 
 const struct dpll_params *get_dpll_ddr_params(void)
@@ -276,14 +338,31 @@ void sdram_init(void)
 {
 	__maybe_unused struct am335x_baseboard_id header;
 
+	load_revision();
+
 	/*
 	 * EVM SK 1.2A and later use gpio0_7 to enable DDR3.
 	 * This is safe enough to do on older revs.
 	 */
 	gpio_request(GPIO_DDR_VTT_EN, "ddr_vtt_en");
 	gpio_direction_output(GPIO_DDR_VTT_EN, 1);
+	
+	printf("RAM Model = %d\n",the_som.ram_model);
+	if (the_som.ram_model == MICRON_MT41K128M16JT) {
+		printf("DDR3: 256MB - Micron MT41K128M16JT\n");
+		config_ddr(303, MT41J128MJT125_IOCTRL_VALUE, &ddr3_data, &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
 
-	config_ddr(303, MT41J128MJT125_IOCTRL_VALUE, &ddr3_data, &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
+	}
+	else if (the_som.ram_model == MICRON_MT41K256M16HA) {
+		printf("DDR3: 512MB - Micron MT41K256M16HA\n");
+		config_ddr(400, MT41K256M16HA125E_IOCTRL_VALUE,
+			   &ddr3_beagleblack_data,
+			   &ddr3_beagleblack_cmd_ctrl_data,
+			   &ddr3_beagleblack_emif_reg_data, 0);
+	}
+	else {
+		printf("DDR3: Unrecognized! \n");
+	}
 
 }
 #endif
@@ -297,6 +376,7 @@ int board_init(void)
 #if defined(CONFIG_NOR) || defined(CONFIG_NAND)
 	gpmc_init();
 #endif
+	load_revision();
 	return 0;
 }
 
