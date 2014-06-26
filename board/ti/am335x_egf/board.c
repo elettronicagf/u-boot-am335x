@@ -165,9 +165,9 @@ int spl_start_uboot(void)
 #define OSC	(V_OSCK/1000000)
 const struct dpll_params dpll_ddr = {
 		266, OSC-1, 1, -1, -1, -1, -1};
-const struct dpll_params dpll_ddr_evm_sk = {
+const struct dpll_params dpll_ddr_303 = {
 		303, OSC-1, 1, -1, -1, -1, -1};
-const struct dpll_params dpll_ddr_bone_black = {
+const struct dpll_params dpll_ddr_400 = {
 		400, OSC-1, 1, -1, -1, -1, -1};
 
 
@@ -223,11 +223,12 @@ void am33xx_spl_board_init(void)
 const struct dpll_params *get_dpll_ddr_params(void)
 {
 	struct am335x_baseboard_id header;
-
+	printf("dpll get par\n");
 	enable_i2c0_pin_mux();
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+	load_revision();
 
-	return &dpll_ddr_evm_sk;
+	return &dpll_ddr_400;
 
 }
 
@@ -263,7 +264,7 @@ void sdram_init(void)
 {
 	__maybe_unused struct am335x_baseboard_id header;
 
-	load_revision();
+
 
 	/*
 	 * EVM SK 1.2A and later use gpio0_7 to enable DDR3.
@@ -275,7 +276,7 @@ void sdram_init(void)
 	printf("RAM Model = %d\n",the_som.ram_model);
 	if (the_som.ram_model == MICRON_MT41K128M16JT) {
 		printf("DDR3: 256MB - Micron MT41K128M16JT\n");
-		config_ddr(303, MT41K128M16JT125E_IOCTRL_VALUE, &ddr3_mt41k128m16jt_data,
+		config_ddr(400, MT41K128M16JT125E_IOCTRL_VALUE, &ddr3_mt41k128m16jt_data,
 					&ddr3_mt41k128m16jt_cmd_ctrl_data, &ddr3_mt41k128m16jt_emif_reg_data, 0);
 	}
 	else if (the_som.ram_model == MICRON_MT41K256M16HA) {
