@@ -8,7 +8,7 @@
 VERSION = 2013
 PATCHLEVEL = 10
 SUBLEVEL =
-EXTRAVERSION =
+EXTRAVERSION = -0438-evb-003
 ifneq "$(SUBLEVEL)" ""
 U_BOOT_VERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)$(EXTRAVERSION)
 else
@@ -794,7 +794,7 @@ checkarmreloc: $(obj)u-boot
 
 $(VERSION_FILE):
 		@mkdir -p $(dir $(VERSION_FILE))
-		@( localvers='$(shell $(TOPDIR)/tools/setlocalversion $(TOPDIR))' ; \
+		@( localvers="" ; \
 		   printf '#define PLAIN_VERSION "%s%s"\n' \
 			"$(U_BOOT_VERSION)" "$${localvers}" ; \
 		   printf '#define U_BOOT_VERSION "U-Boot %s%s"\n' \
