@@ -16,8 +16,9 @@ loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdtaddr} am335x-egf.dtb
 console=ttyO0,115200n8
 mmcroot=/dev/mmcblk0p2 ro
 mmcrootfstype=ext4 rootwait fixrtc
+g_ether_args=g_ether.dev_addr=58:05:56:00:04:5e g_ether.host_addr=58:05:56:00:04:5d\0"\
 
-mmcargs=setenv bootargs console=${console} root=${mmcroot} rootfstype=${mmcrootfstype} ${optargs}
+mmcargs=setenv bootargs console=${console} root=${mmcroot} rootfstype=${mmcrootfstype} ${optargs} ${g_ether_args}
  
 #zImage:
 uenvcmd=run loadimage; run loadfdt; run mmcargs; bootz ${loadaddr} - ${fdtaddr}
