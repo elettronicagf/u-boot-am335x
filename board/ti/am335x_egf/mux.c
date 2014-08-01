@@ -191,6 +191,9 @@ static struct module_pin_mux nand_pin_mux[] = {
 	{-1},
 };
 
+
+
+
 #if defined(CONFIG_NOR) && !defined(CONFIG_NOR_BOOT)
 static struct module_pin_mux bone_norcape_pin_mux[] = {
 	{OFFSET(lcd_data0), MODE(1) | PULLUDEN | RXACTIVE},     /* NOR_A0 */
@@ -339,5 +342,5 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
 	configure_module_pin_mux(gpio0_7_pin_mux);
 	configure_module_pin_mux(rgmii1_pin_mux);
 	configure_module_pin_mux(mmc0_pin_mux_sk_evm);
-
+	configure_module_pin_mux(nand_pin_mux);
 }
