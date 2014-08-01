@@ -50,8 +50,6 @@
 		"uuid_disk=${uuid_gpt_disk};" \
 		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
 	"optargs=\0" \
-	"dfu_alt_info_mmc=" DFU_ALT_INFO_MMC "\0" \
-	"dfu_alt_info_emmc=rawemmc mmc 0 3751936\0" \
 	"mmcdev=0\0" \
 	"mmcroot=/dev/mmcblk0p2 ro\0" \
 	"mmcrootfstype=ext4 rootwait\0" \
@@ -89,7 +87,6 @@
 	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
-	"dfu_alt_info_ram=" DFU_ALT_INFO_RAM "\0" \
 	"ramargs=setenv bootargs console=${console} " \
 		"${optargs} " \
 		"root=${ramroot} " \
@@ -212,13 +209,13 @@
 #define CONFIG_EFI_PARTITION
 #define CONFIG_PARTITION_UUIDS
 #define CONFIG_CMD_PART
-
+#define CONFIG_NAND
 /* NAND support */
 #ifdef CONFIG_NAND
 /* NAND: device related configs */
 #define CONFIG_SYS_NAND_PAGE_SIZE		2048
 #define CONFIG_SYS_NAND_OOBSIZE			64
-#define CONFIG_SYS_NAND_BLOCK_SIZE		(128*1024)
+#define CONFIG_SYS_NAND_BLOCK_SIZE		(64*2048)
 #define CONFIG_SPL_NAND_DEVICE_WIDTH		8
 #define CONFIG_SYS_NAND_5_ADDR_CYCLE
 #define CONFIG_SYS_NAND_PAGE_COUNT		(CONFIG_SYS_NAND_BLOCK_SIZE / \
@@ -243,18 +240,6 @@
 #define CONFIG_NAND_OMAP_ECCSCHEME		OMAP_ECC_BCH8_CODE_HW
 #if !defined(CONFIG_SPI_BOOT) && !defined(CONFIG_NOR_BOOT) && \
 	!defined(CONFIG_EMMC_BOOT)
-  #define MTDIDS_DEFAULT		      "nand0=nand.0"
-  #define MTDPARTS_DEFAULT		      "mtdparts=nand.0:" \
-					      "128k(NAND.SPL)," \
-					      "128k(NAND.SPL.backup1)," \
-					      "128k(NAND.SPL.backup2)," \
-					      "128k(NAND.SPL.backup3)," \
-					      "256k(NAND.u-boot-spl-os)," \
-					      "1m(NAND.u-boot)," \
-					      "128k(NAND.u-boot-env)," \
-					      "128k(NAND.u-boot-env.backup1)," \
-					      "8m(NAND.kernel)," \
-					      "-(NAND.rootfs)"
   #undef CONFIG_ENV_IS_NOWHERE
   #define CONFIG_ENV_IS_IN_NAND
   #define CONFIG_ENV_OFFSET			0x001C0000
@@ -336,46 +321,6 @@
  */
 #undef CONFIG_SPL_ETH_SUPPORT
 #endif
-
-/* USB Device Firmware Update support */
-#define CONFIG_DFU_FUNCTION
-#define CONFIG_DFU_MMC
-#define CONFIG_CMD_DFU
-#define DFU_ALT_INFO_MMC \
-	"boot part 0 1;" \
-	"rootfs part 0 2;" \
-	"MLO fat 0 1;" \
-	"MLO.raw mmc 100 100;" \
-	"u-boot.img.raw mmc 300 400;" \
-	"spl-os-args.raw mmc 80 80;" \
-	"spl-os-image.raw mmc 900 2000;" \
-	"spl-os-args fat 0 1;" \
-	"spl-os-image fat 0 1;" \
-	"u-boot.img fat 0 1;" \
-	"uEnv.txt fat 0 1"
-#ifdef CONFIG_NAND
-#define CONFIG_DFU_NAND
-
-#ifdef DFU_ALT_INFO_NAND
-#undef DFU_ALT_INFO_NAND
-#endif
-#define DFU_ALT_INFO_NAND \
-	"NAND.SPL part 0 1;" \
-	"NAND.SPL.backup1 part 0 2;" \
-	"NAND.SPL.backup2 part 0 3;" \
-	"NAND.SPL.backup3 part 0 4;" \
-	"NAND.u-boot-spl-os part 0 5;" \
-	"NAND.u-boot part 0 6;" \
-	"NAND.u-boot-env part 0 7;" \
-	"NAND.u-boot-env.backup1 part 0 8;" \
-	"NAND.kernel part 0 9;" \
-	"NAND.rootfs part 0 10"
-#endif
-#define CONFIG_DFU_RAM
-#define DFU_ALT_INFO_RAM \
-	"kernel ram 0x80200000 0xD80000;" \
-	"fdt ram 0x80F80000 0x80000;" \
-	"ramdisk ram 0x81000000 0x4000000"
 
 /*
  * Default to using SPI for environment, etc.
