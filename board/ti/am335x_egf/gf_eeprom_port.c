@@ -16,6 +16,8 @@ struct wid_list_for_eeprom_programming wid_list[] = {
 	{"JSF0400_B01.beta1","WID0400_AA01.01"},
 	{"JSF0400_C01.beta1","WID0400_AB01.01"},
 	{"JSF0400_D01.beta1","WID0400_AA01.01"},
+	{"JSF0400_E01.beta1","WID0400_AC01.01"},
+	{"JSF0400_F01.beta1","WID0400_AD01.01"},
 };
 
 void *gf_memset(void *s, int c, size_t n)
