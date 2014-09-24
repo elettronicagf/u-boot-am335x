@@ -153,6 +153,7 @@ static struct module_pin_mux rgmii1_pin_mux[] = {
 	{-1},
 };
 
+
 static struct module_pin_mux mii1_pin_mux[] = {
 	{OFFSET(mii1_rxerr), MODE(0) | RXACTIVE},	/* MII1_RXERR */
 	{OFFSET(mii1_txen), MODE(0)},			/* MII1_TXEN */
@@ -340,7 +341,7 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
 	/* Starter Kit EVM */
 	configure_module_pin_mux(i2c1_pin_mux);
 	configure_module_pin_mux(gpio0_7_pin_mux);
-	configure_module_pin_mux(rgmii1_pin_mux);
+	configure_module_pin_mux(mii1_pin_mux);
 	configure_module_pin_mux(mmc0_pin_mux_sk_evm);
 	configure_module_pin_mux(nand_pin_mux);
 }
