@@ -10,7 +10,7 @@
 #ifndef GF_EEPROM_H_
 #define GF_EEPROM_H_
 
-#define GF_EEPROM_SW_VERSION "1.0.2"
+#define GF_EEPROM_SW_VERSION "1.0.3"
 
 #define PRODUCT_VERSION_LEN  12  /* termination character included. ex: JSC0336_A02*/
 
@@ -59,5 +59,5 @@ void load_som_eeprom(void);
 void load_board_eeprom(void);
 
 int gf_load_som_revision(char ** egf_sw_id_code, int bypass_checks);
-
+int reset_gf_som_eeprom_content(char* egf_sw_id_code, int ask_confirmation);
 #endif /* GF_EEPROM_H_ */

@@ -102,6 +102,7 @@ COBJS-$(CONFIG_CMD_HASH) += cmd_hash.o
 COBJS-$(CONFIG_CMD_IDE) += cmd_ide.o
 COBJS-$(CONFIG_CMD_IMMAP) += cmd_immap.o
 COBJS-$(CONFIG_CMD_INI) += cmd_ini.o
+COBJS-$(CONFIG_CMD_INIT_EEPROM) += cmd_init_eeprom.o
 COBJS-$(CONFIG_CMD_IRQ) += cmd_irq.o
 COBJS-$(CONFIG_CMD_ITEST) += cmd_itest.o
 COBJS-$(CONFIG_CMD_JFFS2) += cmd_jffs2.o

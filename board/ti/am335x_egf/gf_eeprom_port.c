@@ -182,12 +182,12 @@ void gf_serial_init(void)
 
 void gf_som_eeprom_unlock(void)
 {
-	//set_cpld_gpio(EEPROM_WP_107,1);
+	/* NON E' GESTIBILE VIA GPIO */
 }
 
 void gf_som_eeprom_lock(void)
 {
-	//set_cpld_gpio(EEPROM_WP_107,0);
+	/* NON E' GESTIBILE VIA GPIO */
 }
 
 int gf_eeprom_read(u8 address,u16 start_address,u8 * buffer,int len)

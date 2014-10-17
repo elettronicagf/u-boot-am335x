@@ -210,6 +210,10 @@
 #define CONFIG_PARTITION_UUIDS
 #define CONFIG_CMD_PART
 #define CONFIG_NAND
+
+/* Command Reset EEPROM with WID */
+#define CONFIG_CMD_INIT_EEPROM
+
 /* NAND support */
 #ifdef CONFIG_NAND
 /* NAND: device related configs */

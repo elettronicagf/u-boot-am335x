@@ -738,4 +738,55 @@ int gf_load_som_revision(char ** egf_sw_id_code, int bypass_checks)
 
 }
 
+int reset_gf_som_eeprom_content(char* egf_sw_id_code, int ask_confirmation)
+{
+	int som_eeprom_hw_status;
+	int som_eeprom_protocol;
+	char * serial_number;
+	int ret;
+	int index = 0;
+	int eeprom_is_empty;
+	char c;
 
+	gf_debug(0,"Eeprom GF module version: %s\n",GF_EEPROM_SW_VERSION);
+	gf_i2c_init();
+	init_gf_som_eeprom();
+	/* Detect SOM eeprom */
+	som_eeprom_hw_status = check_eeprom_hw_som();
+	if (som_eeprom_hw_status == EEPROM_NOT_FOUND)
+	{
+		/* If SOM eeprom is not found stop boot */
+		gf_debug(0,"Eeprom not detected. HW issue?\n");
+		return -1;
+	}
+	if (ask_confirmation){
+		/* Ask user confirmation to reprogram eeprom */
+		gf_serial_init();
+		gf_debug(0,"Eeprom corrupted.Reset now with WID=%s? [Type y to confirm] ",egf_sw_id_code);
+		c = gf_serial_getc();
+		gf_debug(0,"%c\n",c);
+		if(c != 'y' && c != 'Y')
+			return -1;
+	}
+
+
+	gf_strcpy(read_config.wid, egf_sw_id_code);
+	read_config.product_code[0] = 0;
+
+	/* Write data read from file to SOM eeprom */
+	gf_som_eeprom_unlock();
+	program_som_eeprom(&read_config);
+	gf_som_eeprom_lock();
+
+	/* Re-load SOM eeprom after programming */
+	som_eeprom_protocol = identify_eeprom_protocol_som();
+	load_som_eeprom();
+	*egf_sw_id_code = gf_eeprom_get_som_sw_id_code();
+	/* If SW ID is programmed, eeprom is validated */
+	if (*egf_sw_id_code != NULL)
+	{
+		return 0;
+	}
+	return -1;
+
+}
