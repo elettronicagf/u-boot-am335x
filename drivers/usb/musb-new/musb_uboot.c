@@ -58,7 +58,7 @@ static struct urb *construct_urb(struct usb_device *dev, int endpoint_type,
 	return &urb;
 }
 
-#define MUSB_HOST_TIMEOUT	0x3ffffff
+#define MUSB_HOST_TIMEOUT	0x3fffff
 
 static int submit_urb(struct usb_hcd *hcd, struct urb *urb)
 {
