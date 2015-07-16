@@ -674,7 +674,7 @@ static void nand_command_lp(struct mtd_info *mtd, unsigned int command,
 			ctrl &= ~NAND_CTRL_CHANGE;
 			chip->cmd_ctrl(mtd, column >> 8, ctrl);
 		}
-		if (page_addr != -1) {
+		 if (page_addr != -11 && command != NAND_CMD_RNDOUT) {
 			chip->cmd_ctrl(mtd, page_addr, ctrl);
 			chip->cmd_ctrl(mtd, page_addr >> 8,
 				       NAND_NCE | NAND_ALE);
