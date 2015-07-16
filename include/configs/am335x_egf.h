@@ -197,13 +197,26 @@
 #define CONFIG_EFI_PARTITION
 #define CONFIG_PARTITION_UUIDS
 #define CONFIG_CMD_PART
-#define CONFIG_NAND
 
 /* Command Reset EEPROM with WID */
 #define CONFIG_CMD_INIT_EEPROM
 
 /* NAND support */
 #ifdef CONFIG_NAND
+#define MTDIDS_DEFAULT		      "nand0=nand.0"
+#define MTDPARTS_DEFAULT		   "mtdparts=nand.0:" \
+					  "128k(NAND.SPL)," \
+					  "128k(NAND.SPL.backup1)," \
+					  "128k(NAND.SPL.backup2)," \
+					  "128k(NAND.SPL.backup3)," \
+					  "256k(NAND.u-boot-spl-os)," \
+					  "1m(NAND.u-boot)," \
+					  "128k(NAND.u-boot-env)," \
+					  "128k(NAND.u-boot-env.backup1)," \
+					  "8m(NAND.kernel)," \
+					  "-(NAND.rootfs)"
+
+
 /* NAND: device related configs */
 #define CONFIG_SYS_NAND_PAGE_SIZE		2048
 #define CONFIG_SYS_NAND_OOBSIZE			64
