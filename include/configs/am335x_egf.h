@@ -37,104 +37,35 @@
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 
 #ifndef CONFIG_SPL_BUILD
+
+/*	"usbroot=/dev/sda2 rw\0" \
+	"usbrootfstype=ext4 rootwait\0" \
+
+	"root=${usbroot} " \
+	"rootfstype=${usbrootfstype}\0" \
+
+ */
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"loadaddr=0x80200000\0" \
 	"fdtaddr=0x80F80000\0" \
 	"fdt_high=0xa0000000\0" \
 	"boot_fdt=try\0" \
-	"rdaddr=0x81000000\0" \
 	"bootpart=0:2\0" \
-	"bootdir=/boot\0" \
 	"bootfile=zImage\0" \
 	"fdtfile=undefined\0" \
 	"console=ttyO0,115200n8\0" \
-	"partitions=" \
-		"uuid_disk=${uuid_gpt_disk};" \
-		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
 	"optargs=\0" \
 	"mmcdev=0\0" \
 	"mmcroot=/dev/mmcblk0p2 ro\0" \
-	"mmcrootfstype=ext4 rootwait\0" \
-	"usbroot=/dev/sda2 rw\0" \
-	"usbrootfstype=ext4 rootwait\0" \
+	"mmcrootfstype=ext4 rootwait fixrtc \0" \
 	"rootpath=/export/rootfs\0" \
-	"nfsopts=nolock\0" \
-	"static_ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}" \
-		"::off\0" \
-	"ramroot=/dev/ram0 rw ramdisk_size=65536 initrd=${rdaddr},64M\0" \
-	"ramrootfstype=ext2\0" \
 	"mmcargs=setenv bootargs console=${console} " \
 		"${optargs} " \
 		"root=${mmcroot} " \
 		"rootfstype=${mmcrootfstype}\0" \
 	"usbargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"root=${usbroot} " \
-		"rootfstype=${usbrootfstype}\0" \
-	"spiroot=/dev/mtdblock4 rw\0" \
-	"spirootfstype=jffs2\0" \
-	"spisrcaddr=0xe0000\0" \
-	"spiimgsize=0x362000\0" \
-	"spibusno=0\0" \
-	"spiargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"root=${spiroot} " \
-		"rootfstype=${spirootfstype}\0" \
-	"netargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"root=/dev/nfs " \
-		"nfsroot=${serverip}:${rootpath},${nfsopts} rw " \
-		"ip=dhcp\0" \
-	"bootenv=uEnv.txt\0" \
-	"loadbootenv=load mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
-	"importbootenv=echo Importing environment from mmc ...; " \
-		"env import -t $loadaddr $filesize\0" \
-	"ramargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"root=${ramroot} " \
-		"rootfstype=${ramrootfstype}\0" \
-	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
-	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
-	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
-	"mmcloados=run mmcargs; " \
-		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-			"if run loadfdt; then " \
-				"bootz ${loadaddr} - ${fdtaddr}; " \
-			"else " \
-				"if test ${boot_fdt} = try; then " \
-					"bootz; " \
-				"else " \
-					"echo WARN: Cannot load the DT; " \
-				"fi; " \
-			"fi; " \
-		"else " \
-			"bootz; " \
-		"fi;\0" \
-	"mmcboot=mmc dev ${mmcdev}; " \
-		"if mmc rescan; then " \
-			"echo SD/MMC found on device ${mmcdev};" \
-			"if run loadbootenv; then " \
-				"echo Loaded environment from ${bootenv};" \
-				"run importbootenv;" \
-			"fi;" \
-			"if test -n $uenvcmd; then " \
-				"echo Running uenvcmd ...;" \
-				"run uenvcmd;" \
-			"fi;" \
-			"if run loadimage; then " \
-				"run mmcloados;" \
-			"fi;" \
-		"fi;\0" \
-	"netboot=echo Booting from network ...; " \
-		"setenv autoload no; " \
-		"dhcp; " \
-		"tftp ${loadaddr} ${bootfile}; " \
-		"tftp ${fdtaddr} ${fdtfile}; " \
-		"run netargs; " \
-		"bootz ${loadaddr} - ${fdtaddr}\0" \
-	"ramboot=echo Booting from ramdisk ...; " \
-		"run ramargs; " \
-		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
+		"${optargs} \0" \
 	"findfdt=setenv fdtfile am335x-egf.dtb; \0" \
 	BOOTCMD_COMMON \
 	BOOTCMD_MMC \
@@ -214,11 +145,18 @@
 					  "128k(NAND.u-boot-env)," \
 					  "128k(NAND.u-boot-env.backup1)," \
 					  "8m(NAND.kernel)," \
-					  "-(NAND.rootfs)"
+					  "110m(NAND.file-system)," \
+					  "90m(NAND.home)," \
+					  "30m(NAND.app)," \
+					  "5m(NAND.app_conf)," \
+					  "-(NAND.app_conf_factory)" \
 
 
 /* NAND: device related configs */
+
+#define CONFIG_NAND_UBI_ROOTFS_VOLNAME 		"0438-evb-rootfs"
 #define CONFIG_SYS_NAND_PAGE_SIZE		2048
+#define CONFIG_SYS_NAND_SUBPAGE_SIZE	512
 #define CONFIG_SYS_NAND_OOBSIZE			64
 #define CONFIG_SYS_NAND_BLOCK_SIZE		(64*2048)
 #define CONFIG_SPL_NAND_DEVICE_WIDTH		8
@@ -313,7 +251,7 @@
 #define BOOT_TARGETS_MMC ""
 #endif
 
-#ifdef CONFIG_USB_HOST
+#ifdef CONFIG_MUSB_HOST
 #define BOOT_TARGETS_USB "usb"
 #else
 #define BOOT_TARGETS_USB ""

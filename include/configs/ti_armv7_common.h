@@ -224,11 +224,12 @@
 
 /* Boot defines */
 #define BOOTCMD_COMMON \
-	"rootpart=2\0" \
+	"bootpart=1\0" \
+	"bootdir=/\0" \
 	"script_boot=" \
-		"if load ${devtype} ${devnum}:${rootpart} ${loadaddr} ${bootdir}/${bootfile}; then " \
+		"if load ${devtype} ${devnum}:${bootpart} ${loadaddr} ${bootfile}; then " \
 			"run findfdt; " \
-			"load ${devtype} ${devnum}:${rootpart} ${fdtaddr} ${bootdir}/${fdtfile};" \
+			"load ${devtype} ${devnum}:${bootpart} ${fdtaddr} ${fdtfile};" \
 		"fi;\0" \
 	\
 	"scan_boot=" \
@@ -264,14 +265,11 @@
 	"mmc_boot=" \
 		"setenv devtype mmc; " \
 		"if mmc dev ${devnum}; then " \
-			"run mmcargs;" \
 			"run scan_boot; " \
-			"run mmcboot;" \
-			"setenv mmcdev 1; " \
-			"setenv bootpart 1:2; " \
-			"run mmcboot;" \
+			"run mmcargs;" \
+			"bootz ${loadaddr} - ${fdtaddr}; " \
 		"fi\0" \
-	"bootcmd_mmc0=setenv devnum 0; setenv rootpart 2; run mmc_boot;\0" \
+	"bootcmd_mmc0=setenv mmcdev 0; setenv bootpart 1; run mmc_boot;\0"
 
 /* NAND Boot */
 #define DFU_ALT_INFO_NAND ""
@@ -288,8 +286,8 @@
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
 	"dfu_alt_info_nand=" DFU_ALT_INFO_NAND "\0" \
-	"nandroot=ubi0:rootfs rw ubi.mtd=NAND.file-system," \
-		__stringify(CONFIG_SYS_NAND_PAGE_SIZE) "\0" \
+	"nandroot=ubi0:" CONFIG_NAND_UBI_ROOTFS_VOLNAME " rw ubi.mtd=NAND.file-system," \
+		__stringify(CONFIG_SYS_NAND_SUBPAGE_SIZE) "\0" \
 	"nandrootfstype=ubifs rootwait=1\0" \
 	"nandboot=echo Booting from nand ...; " \
 		"run nandargs; " \
