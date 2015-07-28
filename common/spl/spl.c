@@ -163,11 +163,13 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 	case BOOT_DEVICE_MMC1:
 	case BOOT_DEVICE_MMC2:
 	case BOOT_DEVICE_MMC2_2:
+		puts("BOOT FROM MMC\n");
 		spl_mmc_load_image();
 		break;
 #endif
 #ifdef CONFIG_SPL_NAND_SUPPORT
 	case BOOT_DEVICE_NAND:
+		puts("BOOT FROM NAND\n");
 		spl_nand_load_image();
 		break;
 #endif
@@ -237,6 +239,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
  */
 void preloader_console_init(void)
 {
+	u32 boot_device;
 	gd->bd = &bdata;
 	gd->baudrate = CONFIG_BAUDRATE;
 
@@ -249,4 +252,19 @@ void preloader_console_init(void)
 #ifdef CONFIG_SPL_DISPLAY_PRINT
 	spl_display_print();
 #endif
+
+	boot_device = spl_boot_device();
+	switch(boot_device){
+		case BOOT_DEVICE_MMC1:
+		case BOOT_DEVICE_MMC2:
+		case BOOT_DEVICE_MMC2_2:
+			puts("BOOT FROM MMC\n");
+			break;
+		case BOOT_DEVICE_NAND:
+			puts("BOOT FROM NAND\n");
+			break;
+		default:
+			puts("BOOT FROM UNKNOWN SOURCE\n");
+			break;
+	}
 }
