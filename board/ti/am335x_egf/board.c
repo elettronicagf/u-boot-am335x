@@ -46,6 +46,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define REV_WID0400_AB0101 "WID0400_AB01.01"
 #define REV_WID0400_AC0101 "WID0400_AC01.01"
 #define REV_WID0400_AD0101 "WID0400_AD01.01"
+#define REV_WID0400_AE0101 "WID0400_AE01.01"
+#define REV_WID0400_AF0101 "WID0400_AF01.01"
 
 struct egf_som {
 	int ram_model;
@@ -99,6 +101,18 @@ int load_revision(void)
 	{
 		/* SW Revision is WID0400_AD01.00 */
 		printf("GF Software ID Code: WID0400_AD01.01\n");
+		the_som.ram_model = MICRON_MT41K128M16JT;
+	}
+	else if(!gf_strcmp(egf_sw_id_code,REV_WID0400_AE0101))
+	{
+		/* SW Revision is WID0400_AE01.00 */
+		printf("GF Software ID Code: WID0400_AE01.01\n");
+		the_som.ram_model = MICRON_MT41K128M16JT;
+	}
+	else if(!gf_strcmp(egf_sw_id_code,REV_WID0400_AF0101))
+	{
+		/* SW Revision is WID0400_AF01.00 */
+		printf("GF Software ID Code: WID0400_AF01.01\n");
 		the_som.ram_model = MICRON_MT41K128M16JT;
 	}
 	else {
